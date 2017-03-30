@@ -22,60 +22,62 @@ function HanziStrokes(config){
 
     //set canvas id
     if(config.canvas_id){
-        this.canvas_id=config.canvas_id;
+        canvas_id=config.canvas_id;
     }
 
-    var canvas=document.getElementById(this.canvas_id);
+    var canvas=document.getElementById(canvas_id);
+    var w=canvas.width;
+    var h=canvas.height;
     var ctx = canvas.getContext('2d');
 
     //set colors
     if(config.color_canvas){
-        this.canvas_id=config.canvas_id;
+    	color_canvas=config.color_canvas;
     }
 
     if(config.color_shadow){
-        this.color_shadow=config.color_shadow;
+        color_shadow=config.color_shadow;
     }
 
     if(config.color_stroke){
-        this.color_stroke=config.color_stroke;
+        color_stroke=config.color_stroke;
     }
 
     if(config.color_border){
-        this.color_border=config.color_border;
+        color_border=config.color_border;
     }
 
     //time gap between displaying chars
     if(config.interval_char){
-        this.interval_char=config.interval_char;
+        interval_char=config.interval_char;
     }
 
     //time gap between displaying strokes
     if(config.interval_stroke){
-        this.interval_stroke=config.interval_stroke;
+        interval_stroke=config.interval_stroke;
     }
 
     //time gap between drawing points
     if(config.interval_point){
-        this.interval_point=config.interval_point;
+        interval_point=config.interval_point;
     }
 
     //how many points draw in every frame
     if(config.point_batch){
-        this.point_batch=config.point_batch;
+        point_batch=config.point_batch;
     }
 
     //if show grids and debug informations
     if(config.debug){
-        this.debug=config.debug;
+        debug=config.debug;
     }
 
     //set data
+    
     if(config.data){
-        this.data=config.data;
-        //console.log(this.canvas_id);
-        stroke_arr = [];
-        var stroke_data_arr = this.data.split("#");
+        data=config.data;
+        //console.log(this.canvas_id);        
+        var stroke_data_arr = data.split("#");
         for(var i = 0; i < stroke_data_arr.length; i++){
             var point_data_arr = stroke_data_arr[i].split("-");
             point_arr=[]
@@ -88,13 +90,15 @@ function HanziStrokes(config){
     }
 
     //draw background
-    this.draw_backround=function(){
-
+    draw_backround=function(){
+    	ctx.fillStyle = color_canvas;
+    	ctx.fillRect(0,0,w,h);
     };
 
     //show
     this.show=function(){
         //console.log(canvas);
+    	draw_backround();
         draw_shadow();
     };
 
@@ -148,9 +152,13 @@ function HanziStrokes(config){
     var need_refresh = false;
     var time_to_sleep = interval_point;
     var new_stroke=false;
-
+    var stop=false;
+    
     //do animation
-    this.animate=function(){  
+    this.animate=function(){
+    	if(stop){
+    		return;
+    	}
         if(need_refresh){
             draw_shadow();
             need_refresh = false;
@@ -195,6 +203,15 @@ function HanziStrokes(config){
         timer = setTimeout(function() {
                 that.animate();
         }, time_to_sleep);
+    }
+    
+    
+    this.update = function(new_data){
+    	stop = true;
+    	data=new_data;
+    	update_data();
+    	this.draw_backround();
+    	this.show();
     }
 
 };
